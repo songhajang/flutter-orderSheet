@@ -1,31 +1,133 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+// firestore 연동
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(TestApplication());
 }
 
-class MyApp extends StatelessWidget {
+// firebase 데이터 형식 지정
+class Todo {
+  String title;
+  bool isDone;
+
+  Todo(this.title, {this.isDone = false});
+}
+
+// 화면 빌드
+class TestApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Flutter'),
-        ),
-        body: Center(
-          child: Text('Hello World'),
+      title: 'Test Application',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MainPage(),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  TextEditingController _todoController = TextEditingController();
+
+  @override
+  void dispose() {
+    _todoController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('남은 할 일'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: TextField(
+                    controller: _todoController,
+                  ),
+                ),
+                TextButton(
+                  child: Text('추가'),
+                  onPressed: () => _addTodo(Todo(_todoController.text)),
+                ),
+              ],
+            ),
+            StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection('todo').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+                  final documents = snapshot.data!.docs;
+                  return Expanded(
+                    child: ListView(
+                      children:
+                          documents.map((doc) => _buildItem(doc)).toList(),
+                    ),
+                  );
+                }),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildItem(DocumentSnapshot snapshot) {
+    final todo = Todo(snapshot['title'], isDone: snapshot['isDone']);
+    return ListTile(
+      title: Text(
+        todo.title,
+        style: todo.isDone
+            ? TextStyle(
+                decoration: TextDecoration.lineThrough,
+                fontStyle: FontStyle.italic,
+              )
+            : null,
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete_forever),
+        onPressed: () => _deleteTodo(snapshot),
+      ),
+      onTap: () => _toggleTodo(snapshot),
+    );
+  }
+
+  void _addTodo(Todo todo) {
+    setState(() {
+      FirebaseFirestore.instance
+          .collection('todo')
+          .add({'title': todo.title, 'isDone': todo.isDone});
+      _todoController.text = "";
+    });
+  }
+
+  void _deleteTodo(DocumentSnapshot snapshot) {
+    FirebaseFirestore.instance.collection('todo').doc(snapshot.id).delete();
+  }
+
+  void _toggleTodo(DocumentSnapshot snapshot) {
+    FirebaseFirestore.instance
+        .collection('todo')
+        .doc(snapshot.id)
+        .update({'isDone': !snapshot['isDone']});
   }
 }
