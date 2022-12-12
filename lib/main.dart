@@ -15,13 +15,10 @@ void main() async {
   runApp(MyApp());
 }
 
-class Test {
-  int tableId;
-  String title;
-  Test(
-    this.tableId,
-    this.title,
-  );
+class Category {
+  String custom;
+  bool isSected;
+  Category(this.custom, {this.isSected = false});
 }
 
 class MyApp extends StatelessWidget {
@@ -60,10 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Scaffold(
         key: scaffoldKey,
         drawer: Drawer(
-          width: 250,
+          width: 300,
           backgroundColor: Colors.black,
           child: Padding(
-            padding: const EdgeInsets.all(30),
+            padding: const EdgeInsets.all(20),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -80,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
-                          .collection('test')
+                          .collection('category')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
@@ -137,15 +134,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // firebase 데이터 뿌리기 시작----
 Widget _buildItem(DocumentSnapshot snapshot) {
-  final a = Test(snapshot['tableId'], snapshot['title']);
-  return ListTile(
-    title: Text(
-      'table: ${a.tableId.toString()}',
-      style: const TextStyle(
-        color: Colors.grey,
-        fontSize: 20.0,
+  final a = Category(snapshot['custom'], isSected: snapshot['isSected']);
+  return Container(
+    margin: EdgeInsets.all(5),
+    child: ElevatedButton(
+      onPressed: () {
+        toggleSected(snapshot);
+      },
+      style: a.isSected
+          ? const ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll<Color>(Color(0xff28BE91)),
+            )
+          : const ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll<Color>(Colors.white)),
+      child: ListTile(
+        title: Text(
+          a.custom.toString(),
+          style: a.isSected
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0,
+                  color: Colors.white)
+              : const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0,
+                ),
+        ),
       ),
     ),
   );
+}
+
+void toggleSected(DocumentSnapshot snapshot) {
+  FirebaseFirestore.instance
+      .collection('category')
+      .doc(snapshot.id)
+      .update({'isSected': !snapshot['isSected']});
 }
   // firebase 데이터 뿌리기 끝----
