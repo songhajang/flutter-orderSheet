@@ -3,27 +3,25 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'firebase_options.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // firestore 연동
-// FirebaseFirestore firestore = FirebaseFirestore.instance;
-// void main() async {
-// await Firebase.initializeApp(
-//   options: DefaultFirebaseOptions.currentPlatform,
-// );
-// runApp(MyApp());
-// }
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
-class Todo {
+class Test {
+  int tableId;
   String title;
-  bool isDone;
-
-  Todo(this.title, {this.isDone = false});
+  Test(
+    this.tableId,
+    this.title,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   String title = '주문내역이 없습니다.';
   var scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -61,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Scaffold(
         key: scaffoldKey,
         drawer: Drawer(
+          width: 250,
           backgroundColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(30),
@@ -78,7 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                  // ElevatedButton(onPressed: (() => {}), child: const Text('전체'))
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('test')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+                        final documents = snapshot.data!.docs;
+                        return Expanded(
+                          child: ListView(
+                            children: documents
+                                .map((doc) => _buildItem(doc))
+                                .toList(),
+                          ),
+                        );
+                      }),
                 ]),
           ),
         ),
@@ -86,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-// appbar 구현
+// appbar 구현 시작----
   Widget CreateAppBar({String? title}) {
     return AppBar(
       automaticallyImplyLeading: false,
@@ -117,3 +133,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+// appbar 구현 끝-----
+
+// firebase 데이터 뿌리기 시작----
+Widget _buildItem(DocumentSnapshot snapshot) {
+  final a = Test(snapshot['tableId'], snapshot['title']);
+  return ListTile(
+    title: Text(
+      'table: ${a.tableId.toString()}',
+      style: const TextStyle(
+        color: Colors.grey,
+        fontSize: 20.0,
+      ),
+    ),
+  );
+}
+  // firebase 데이터 뿌리기 끝----
