@@ -43,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String title = '주문내역이 없습니다.';
+  List datas = [];
   var scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -75,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
+                  // firesotre 데이터 화면에 출력 시작----
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('category')
@@ -87,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return Expanded(
                           child: ListView(
                             children: documents
-                                .map((doc) => _buildItem(doc))
+                                .map((doc) => _buildItem(doc, datas))
                                 .toList(),
                           ),
                         );
@@ -133,13 +135,17 @@ class _MyHomePageState extends State<MyHomePage> {
 // appbar 구현 끝-----
 
 // firebase 데이터 뿌리기 시작----
-Widget _buildItem(DocumentSnapshot snapshot) {
+Widget _buildItem(DocumentSnapshot snapshot, datas) {
+  if (!datas.contains(snapshot.id)) {
+    datas.add(snapshot.id);
+  }
+  // print(datas);
   final a = Category(snapshot['custom'], isSected: snapshot['isSected']);
   return Container(
-    margin: EdgeInsets.all(5),
+    margin: const EdgeInsets.all(5),
     child: ElevatedButton(
       onPressed: () {
-        toggleSected(snapshot);
+        toggleSected(snapshot, datas);
       },
       style: a.isSected
           ? const ButtonStyle(
@@ -165,11 +171,21 @@ Widget _buildItem(DocumentSnapshot snapshot) {
     ),
   );
 }
+// firebase 데이터 뿌리기 끝----
 
-void toggleSected(DocumentSnapshot snapshot) {
-  FirebaseFirestore.instance
-      .collection('category')
-      .doc(snapshot.id)
-      .update({'isSected': !snapshot['isSected']});
+// firestore 선택 데이터 업데이트 함수
+void toggleSected(DocumentSnapshot snapshot, datas) {
+  for (var data in datas) {
+    if (data == snapshot.id) {
+      FirebaseFirestore.instance
+          .collection('category')
+          .doc(snapshot.id)
+          .update({'isSected': true});
+    } else {
+      FirebaseFirestore.instance
+          .collection('category')
+          .doc(data)
+          .update({'isSected': false});
+    }
+  }
 }
-  // firebase 데이터 뿌리기 끝----
