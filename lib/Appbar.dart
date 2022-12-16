@@ -1,13 +1,15 @@
 // ----appbar 구현 시작----
-import 'dart:js';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 Widget CreateAppBar({
-  String? title,
+  required String title,
+  // required String sectionText,
   required GlobalKey<ScaffoldState> scaffoldKey,
+  required List datas,
 }) {
+  // print(sectionText);
+
   return AppBar(
     automaticallyImplyLeading: false,
     backgroundColor: Colors.white,
@@ -20,7 +22,7 @@ Widget CreateAppBar({
         color: Colors.black,
       ),
       label: Text(
-        title!,
+        title,
         style:
             const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
       ),
@@ -29,10 +31,11 @@ Widget CreateAppBar({
     leading: IconButton(
       icon: const Icon(Icons.settings),
       onPressed: () => scaffoldKey.currentState!.openDrawer(),
-      // onPressed: (() {}),
     ),
     actions: <Widget>[
-      IconButton(onPressed: () {}, icon: const Icon(Icons.receipt))
+      IconButton(
+          onPressed: () => scaffoldKey.currentState!.openEndDrawer(),
+          icon: const Icon(Icons.receipt))
     ],
   );
 }

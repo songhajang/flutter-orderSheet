@@ -1,14 +1,15 @@
 // ----Drewar 구현 시작----
-import 'dart:js';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'Test.dart';
 import 'items.dart';
 
 Widget Drewar({
   required GlobalKey<ScaffoldState> scaffoldKey,
   required List datas,
+  required List dataId,
 }) {
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
       Widget>[
@@ -32,7 +33,9 @@ Widget Drewar({
           final documents = snapshot.data!.docs;
           return Expanded(
             child: ListView(
-              children: documents.map((doc) => buildItem(doc, datas)).toList(),
+              children: documents
+                  .map((doc) => buildItem(doc, datas, dataId))
+                  .toList(),
             ),
           );
         }),
