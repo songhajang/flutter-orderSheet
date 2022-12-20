@@ -11,6 +11,7 @@ import 'drewer.dart';
 import 'endDrewer.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
 
 // firestore 연동
 void main() async {
@@ -18,6 +19,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // runApp(GetMaterialApp(home: MyApp()));
   runApp(MyApp());
 }
 
@@ -33,10 +35,22 @@ class Orders {
   Orders(this.orderData, this.category);
 }
 
+class SimpleController extends GetxController {
+  RxList datas = [].obs;
+  RxList dataId = [].obs;
+
+  RxList get dataTest => datas;
+  RxList get dataIdTest => dataId;
+
+  void getAdd(value) {
+    datas.add(value);
+  }
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Color(0xff3D4253)),
       // darkTheme: ThemeData(brightness: Brightness.dark),
@@ -54,37 +68,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String title = '주문내역이 없습니다.';
-  List datas = [];
-  List dataId = [];
   @override
   Widget build(BuildContext context) {
-    print(datas);
+    SetDatas();
+
+    Get.put(SimpleController());
+    // print(test);
     var scaffoldKey = new GlobalKey<ScaffoldState>();
     return Scaffold(
       drawerScrimColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        child: CreateAppBar(
-          title: title,
-          scaffoldKey: scaffoldKey,
-          datas: datas,
+        child: GetBuilder<SimpleController>(
+          builder: (controller) {
+            return CreateAppBar(
+              title: title,
+              scaffoldKey: scaffoldKey,
+              datas: controller.datas,
+            );
+          },
         ),
       ),
       body: Scaffold(
           key: scaffoldKey,
           drawer: Drawer(
-            width: 300,
-            backgroundColor: Colors.black,
-            child: Drewar(
-              scaffoldKey: scaffoldKey,
-              datas: datas,
-              dataId: dataId,
-            ),
-          ),
+              width: 300,
+              backgroundColor: Colors.black,
+              child: GetBuilder<SimpleController>(
+                builder: (controller) {
+                  return Drewar(
+                    scaffoldKey: scaffoldKey,
+                    datas: controller.datas,
+                    dataId: controller.dataId,
+                  );
+                },
+              )),
           endDrawer: Drawer(
             width: 250,
             backgroundColor: Colors.black,
-            child: endDrewar(scaffoldKey: scaffoldKey, datas: datas),
+            child: endDrewar(scaffoldKey: scaffoldKey),
           ),
           body: Column(children: [
             StreamBuilder<QuerySnapshot>(
@@ -97,7 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   final documents = snapshot.data!.docs;
 
-                  log("snapshot : ${documents.toList()}");
                   return Expanded(
                     child: ListView(
                       children: documents.map((doc) => Test(doc)).toList(),
@@ -106,5 +127,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 }),
           ])),
     );
+  }
+}
+
+void SetDatas() {
+  List test = [];
+  FirebaseFirestore.instance.collection("category").get().then(
+        (res) => Tests(res.docs),
+        onError: (e) => print("Error completing: $e"),
+      );
+
+  print(test);
+}
+
+void Tests(data) {
+  for (var d in data) {
+    final a = Category(d['custom'], isSected: d['isSected']);
+    print(a);
   }
 }
