@@ -2,10 +2,12 @@
 
 // import 'package:flutter/cupertino.dart';
 import 'dart:developer';
+import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/orderCard.dart';
+import 'package:flutter_application_1/orderSheet.dart';
 import 'Appbar.dart';
 import 'drewer.dart';
 import 'endDrewer.dart';
@@ -45,6 +47,12 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(),
     );
   }
+}
+
+class Orders {
+  String orderData;
+  String category;
+  Orders(this.orderData, this.category);
 }
 
 class MyHomePage extends StatefulWidget {
@@ -89,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             )),
-        body: Column(children: [
+        body: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           StreamBuilder<QuerySnapshot>(
               stream:
                   FirebaseFirestore.instance.collection('order').snapshots(),
@@ -100,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 final documents = snapshot.data!.docs;
                 return Expanded(
                   child: ListView(
-                    children: documents.map((doc) => order(doc)).toList(),
+                    scrollDirection: Axis.horizontal,
+                    children: documents.map((doc) => orderSheet(doc)).toList(),
                   ),
                 );
               }),

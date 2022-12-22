@@ -6,12 +6,6 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'orderOption.dart';
 
-class Orders {
-  String orderData;
-  String category;
-  Orders(this.orderData, this.category);
-}
-
 Widget order(DocumentSnapshot snapshot) {
   final value = Orders(snapshot['orderData'], snapshot['category']);
   // print(datas);
