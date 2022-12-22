@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'main.dart';
 
+class Category {
+  String custom;
+  bool isSected;
+  Category(this.custom, {this.isSected = false});
+}
+
 // ----firebase 데이터 option 시작----
 Widget buildItem(DocumentSnapshot snapshot, datas, dataId) {
   final value = Category(snapshot['custom'], isSected: snapshot['isSected']);
@@ -59,11 +65,6 @@ void toggleSected(DocumentSnapshot snapshot, dataId) {
 // firestore 선택 데이터 업데이트 함수 끝----
 void submitSection(datas) {
   print(datas);
-  // if (datas.length < 2) {
-  //   sectionText = '';
-  // } else {
-  //   sectionText = datas.toString();
-  // }
 }
 
 // section 예외처리 함수

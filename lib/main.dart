@@ -5,7 +5,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Test.dart';
+import 'package:flutter_application_1/orderCard.dart';
 import 'Appbar.dart';
 import 'drewer.dart';
 import 'endDrewer.dart';
@@ -21,18 +21,6 @@ void main() async {
   );
   // runApp(GetMaterialApp(home: MyApp()));
   runApp(MyApp());
-}
-
-class Category {
-  String custom;
-  bool isSected;
-  Category(this.custom, {this.isSected = false});
-}
-
-class Orders {
-  String orderData;
-  String category;
-  Orders(this.orderData, this.category);
 }
 
 class SimpleController extends GetxController {
@@ -70,8 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String title = '주문내역이 없습니다.';
   @override
   Widget build(BuildContext context) {
-    SetDatas();
-
     Get.put(SimpleController());
     // print(test);
     var scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -90,59 +76,41 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Scaffold(
-          key: scaffoldKey,
-          drawer: Drawer(
-              width: 300,
-              backgroundColor: Colors.black,
-              child: GetBuilder<SimpleController>(
-                builder: (controller) {
-                  return Drewar(
-                    scaffoldKey: scaffoldKey,
-                    datas: controller.datas,
-                    dataId: controller.dataId,
-                  );
-                },
-              )),
-          endDrawer: Drawer(
-            width: 250,
+        key: scaffoldKey,
+        drawer: Drawer(
+            width: 300,
             backgroundColor: Colors.black,
-            child: endDrewar(scaffoldKey: scaffoldKey),
-          ),
-          body: Column(children: [
-            StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('order').snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  final documents = snapshot.data!.docs;
-
-                  return Expanded(
-                    child: ListView(
-                      children: documents.map((doc) => Test(doc)).toList(),
-                    ),
-                  );
-                }),
-          ])),
+            child: GetBuilder<SimpleController>(
+              builder: (controller) {
+                return Drewar(
+                  scaffoldKey: scaffoldKey,
+                  datas: controller.datas,
+                  dataId: controller.dataId,
+                );
+              },
+            )),
+        body: Column(children: [
+          StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('order').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const CircularProgressIndicator();
+                }
+                final documents = snapshot.data!.docs;
+                return Expanded(
+                  child: ListView(
+                    children: documents.map((doc) => order(doc)).toList(),
+                  ),
+                );
+              }),
+        ]),
+        endDrawer: Drawer(
+          width: 250,
+          backgroundColor: Colors.black,
+          child: endDrewar(scaffoldKey: scaffoldKey),
+        ),
+      ),
     );
-  }
-}
-
-void SetDatas() {
-  List test = [];
-  FirebaseFirestore.instance.collection("category").get().then(
-        (res) => Tests(res.docs),
-        onError: (e) => print("Error completing: $e"),
-      );
-
-  print(test);
-}
-
-void Tests(data) {
-  for (var d in data) {
-    final a = Category(d['custom'], isSected: d['isSected']);
-    print(a);
   }
 }
