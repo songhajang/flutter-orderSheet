@@ -5,7 +5,8 @@ import 'main.dart';
 import 'orderOption.dart';
 
 Widget order(DocumentSnapshot snapshot) {
-  final value = Orders(snapshot['orderData'], snapshot['category']);
+  final value =
+      Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
   // print(datas);
   return Container(
       margin: EdgeInsets.only(bottom: 5),

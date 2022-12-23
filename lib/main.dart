@@ -45,7 +45,8 @@ class MyApp extends StatelessWidget {
 class Orders {
   String orderData;
   String category;
-  Orders(this.orderData, this.category);
+  int orderNum;
+  Orders(this.orderData, this.category, this.orderNum);
 }
 
 class MyHomePage extends StatefulWidget {

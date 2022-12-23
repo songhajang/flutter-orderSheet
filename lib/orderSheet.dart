@@ -3,7 +3,8 @@ import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/orderCard.dart';
 
 Widget orderSheet(snapshot) {
-  final value = Orders(snapshot['orderData'], snapshot['category']);
+  final value =
+      Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
   // print(datas);
   return Container(
       width: 250,

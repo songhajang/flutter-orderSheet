@@ -19,16 +19,6 @@ Widget endDrewar({
             margin: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      totalOrderTitle('총 주문 메뉴'),
-                      totalOrderTitle(' 개'),
-                    ],
-                  ),
-                ),
                 StreamBuilder(
                     stream: _stream,
                     builder: (BuildContext context,
@@ -39,13 +29,27 @@ Widget endDrewar({
                       if (snapshot.data == []) {
                         return const Text('data');
                       }
-                      return ListView.builder(
-                          // padding: const EdgeInsets.only(bottom: 50),
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) =>
-                              (order(snapshot.data!.docs[index])));
+                      final orderCount = snapshot.data!.docs.length;
+                      return Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                totalOrderTitle('총 주문 메뉴'),
+                                totalOrderTitle('$orderCount 개'),
+                              ],
+                            ),
+                          ),
+                          ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) =>
+                                  (order(snapshot.data!.docs[index])))
+                        ],
+                      );
                     }),
               ],
             )),
