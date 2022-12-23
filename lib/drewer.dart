@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'Test.dart';
 import 'items.dart';
 
 Widget Drewar({
@@ -11,6 +10,7 @@ Widget Drewar({
   required List datas,
   required List dataId,
 }) {
+  print(datas);
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
       Widget>[
     Container(
