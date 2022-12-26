@@ -17,23 +17,12 @@ void main() async {
   runApp(MyApp());
 }
 
-class reactiveStateManagePage extends GetxController {
-  RxList datas = [].obs;
-  RxList dataId = [].obs;
-  // RxList orderIdCheck = [].obs;
-
-  void getAdd(String value) {
-    datas.add(value);
-  }
-}
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Color(0xff3D4253)),
-      // darkTheme: ThemeData(brightness: Brightness.dark),
       home: MyHomePage(),
     );
   }
@@ -53,46 +42,60 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class reactiveStateManagePage extends GetxController {
+  RxList _datas = [].obs;
+  RxList _dataId = [].obs;
+  RxList _orderIdCheck = [].obs;
+
+  RxList get datas => _datas;
+  RxList get dataId => _dataId;
+  RxList get orderIdCheck => _orderIdCheck;
+
+  void addDatas(String value) {
+    _datas.add(value);
+  }
+
+  void removeDatas(String value) {
+    _datas.remove(value);
+  }
+
+  void addDataId(String value) {
+    _dataId.add(value);
+  }
+
+  void removeDataId(String value) {
+    _dataId.remove(value);
+  }
+
+  void addOrderIdCheck(int value) {
+    _orderIdCheck.add(value);
+    print(orderIdCheck);
+  }
+
+  void resetOrderIdCheck() {
+    _orderIdCheck = [].obs;
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   String title = '주문내역이 없습니다.';
-  List orderIdCheck = [];
-  List dataId = [];
-  List datas = [];
   @override
   Widget build(BuildContext context) {
+    final _getData = Get.put(reactiveStateManagePage());
     var scaffoldKey = new GlobalKey<ScaffoldState>();
     return Scaffold(
       drawerScrimColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        // child: GetBuilder<reactiveStateManagePage>(
-        //   builder: (controller) {
-        //     return CreateAppBar(
-        //       title: title,
-        //       scaffoldKey: scaffoldKey,
-        //       datas: controller.datas,
-        //     );
-        //   },
-        // ),
-        child:
-            CreateAppBar(title: title, scaffoldKey: scaffoldKey, datas: datas),
+        child: CreateAppBar(title: title, scaffoldKey: scaffoldKey),
       ),
       body: Scaffold(
         key: scaffoldKey,
         drawer: Drawer(
           width: 300,
           backgroundColor: Colors.black,
-          // child: GetBuilder<reactiveStateManagePage>(
-          //   builder: (controller) {
-          //     return Drewar(
-          //       scaffoldKey: scaffoldKey,
-          //       datas: controller.datas,
-          //       dataId: controller.dataId,
-          //     );
-          //   },
-          child: Drewar(scaffoldKey: scaffoldKey, datas: datas, dataId: dataId),
+          child: Drewar(scaffoldKey: scaffoldKey),
         ),
-        // )),
         body: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           StreamBuilder<QuerySnapshot>(
               stream:
@@ -102,12 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   return const CircularProgressIndicator();
                 }
                 final documents = snapshot.data!.docs;
+                _getData.resetOrderIdCheck();
                 return Expanded(
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    children: documents
-                        .map((doc) => orderSheet(doc, orderIdCheck))
-                        .toList(),
+                    children: documents.map((doc) => orderSheet(doc)).toList(),
                   ),
                 );
               }),

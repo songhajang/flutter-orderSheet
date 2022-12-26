@@ -2,15 +2,14 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/main.dart';
+import 'package:get/get.dart';
 
 import 'items.dart';
 
 Widget Drewar({
   required GlobalKey<ScaffoldState> scaffoldKey,
-  required List datas,
-  required List dataId,
 }) {
-  print(datas);
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
       Widget>[
     Container(
@@ -33,9 +32,7 @@ Widget Drewar({
           final documents = snapshot.data!.docs;
           return Expanded(
             child: ListView(
-              children: documents
-                  .map((doc) => buildItem(doc, datas, dataId))
-                  .toList(),
+              children: documents.map((doc) => buildItem(doc)).toList(),
             ),
           );
         }),
@@ -65,7 +62,8 @@ Widget Drewar({
                 // ignore: deprecated_member_use
                 primary: Color(0xff28BE91)),
             onPressed: () {
-              submitSection(datas);
+              final _getData = Get.put(reactiveStateManagePage());
+              submitSection(_getData.datas);
             },
             child: Text('확인'),
           ),

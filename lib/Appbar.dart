@@ -6,7 +6,6 @@ Widget CreateAppBar({
   required String title,
   // required String sectionText,
   required GlobalKey<ScaffoldState> scaffoldKey,
-  required List datas,
 }) {
   // print(sectionText);
 

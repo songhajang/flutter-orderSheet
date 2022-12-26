@@ -6,18 +6,21 @@ import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/orderCard.dart';
+import 'package:get/get.dart';
 
 // ignore: unused_import
 import 'orderOption.dart';
 
-Widget orderSheet(DocumentSnapshot snapshot, orderIdCheck) {
+Widget orderSheet(DocumentSnapshot snapshot) {
+  final _getData = Get.put(reactiveStateManagePage());
   // ignore: unused_local_variable
   final value =
       Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
-  if (!(orderIdCheck.indexOf(snapshot['orderNum']) == -1)) {
+  if (!(_getData.orderIdCheck.value.indexOf(snapshot['orderNum']) == -1)) {
     return SizedBox();
   } else {
-    orderIdCheck.add(snapshot['orderNum']);
+    _getData.addOrderIdCheck(snapshot['orderNum']);
+    // orderIdCheck.add(snapshot['orderNum']);
   }
   final orderNum = snapshot['orderNum'];
   return Container(

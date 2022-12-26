@@ -17,7 +17,6 @@ Widget order(DocumentSnapshot snapshot) {
             color: const Color(0xffFFF8C7),
             child: Column(
               children: [
-                Container(),
                 Card(
                     color: Color(0xffFFE735),
                     shape: const RoundedRectangleBorder(

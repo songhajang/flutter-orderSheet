@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/main.dart';
+import 'package:get/get.dart';
 
 class Category {
   String custom;
@@ -8,15 +10,15 @@ class Category {
 }
 
 // ----firebase 데이터 option 시작----
-Widget buildItem(DocumentSnapshot snapshot, datas, dataId) {
+Widget buildItem(DocumentSnapshot snapshot) {
   final value = Category(snapshot['custom'], isSected: snapshot['isSected']);
-  ClickCheck(snapshot, datas, dataId);
+  ClickCheck(snapshot);
   return Container(
     margin: const EdgeInsets.all(5),
     padding: const EdgeInsets.only(left: 20, right: 20),
     child: ElevatedButton(
       onPressed: () {
-        toggleSected(snapshot, dataId);
+        toggleSected(snapshot);
       },
       style: value.isSected
           ? const ButtonStyle(
@@ -45,9 +47,10 @@ Widget buildItem(DocumentSnapshot snapshot, datas, dataId) {
 // ----firebase 데이터 option 끝----
 
 // firestore 선택 데이터 업데이트 함수 시작----
-void toggleSected(DocumentSnapshot snapshot, dataId) {
+void toggleSected(DocumentSnapshot snapshot) {
+  final _getData = Get.put(reactiveStateManagePage());
   if (snapshot['custom'] == '전체[섹션없음]') {
-    for (var data in dataId) {
+    for (var data in _getData.dataId) {
       FirebaseFirestore.instance
           .collection('category')
           .doc(data)
@@ -66,12 +69,13 @@ void submitSection(datas) {
 }
 
 // section 예외처리 함수
-void ClickCheck(snapshot, datas, dataId) {
+void ClickCheck(snapshot) {
+  final _getData = Get.put(reactiveStateManagePage());
   if (snapshot['isSected'] == true) {
-    if (!datas.contains(snapshot['custom'])) {
-      dataId.add(snapshot.id);
-      datas.add(snapshot['custom']);
-      if (datas[0] == '전체[섹션없음]' && datas.length < 2) {
+    if (!_getData.datas.contains(snapshot['custom'])) {
+      _getData.addDataId(snapshot.id);
+      _getData.addDatas(snapshot['custom']);
+      if (_getData.datas[0] == '전체[섹션없음]' && _getData.datas.length < 2) {
         FirebaseFirestore.instance
             .collection('category')
             .doc('0')
@@ -84,20 +88,20 @@ void ClickCheck(snapshot, datas, dataId) {
       }
     }
   } else {
-    datas.remove(snapshot['custom']);
-    dataId.remove(snapshot.id);
+    _getData.removeDatas(snapshot['custom']);
+    _getData.removeDataId(snapshot.id);
 
-    if (datas.length < 1) {
-      dataId.add('0');
-      datas.add('전체[섹션없음]');
+    if (_getData.datas.length < 1) {
+      _getData.addDataId('0');
+      _getData.addDatas('전체[섹션없음]');
 
       FirebaseFirestore.instance
           .collection('category')
           .doc('0')
           .update({'isSected': true});
     } else {
-      dataId.remove('0');
-      datas.remove('전체[섹션없음]');
+      _getData.removeDataId('0');
+      _getData.removeDatas('전체[섹션없음]');
     }
   }
 }
