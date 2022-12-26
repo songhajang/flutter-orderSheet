@@ -5,6 +5,7 @@ import 'main.dart';
 import 'orderOption.dart';
 
 Widget order(DocumentSnapshot snapshot) {
+  // ignore: unused_local_variable
   final value =
       Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
   // print(datas);
@@ -16,6 +17,7 @@ Widget order(DocumentSnapshot snapshot) {
             color: const Color(0xffFFF8C7),
             child: Column(
               children: [
+                Container(),
                 Card(
                     color: Color(0xffFFE735),
                     shape: const RoundedRectangleBorder(
@@ -49,7 +51,7 @@ Widget order(DocumentSnapshot snapshot) {
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (!snapshot.hasData) {
-                        return const Text('데이터를 불러오지 못했어요');
+                        return const Text('데이터를 불러오는 중입니다...');
                       }
                       if (snapshot.data == null) {
                         return SizedBox.shrink();

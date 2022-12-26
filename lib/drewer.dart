@@ -47,6 +47,7 @@ Widget Drewar({
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              // ignore: deprecated_member_use
               primary: Colors.grey,
             ),
             onPressed: () {
@@ -61,6 +62,7 @@ Widget Drewar({
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                // ignore: deprecated_member_use
                 primary: Color(0xff28BE91)),
             onPressed: () {
               submitSection(datas);
