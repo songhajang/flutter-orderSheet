@@ -32,7 +32,10 @@ class Orders {
   String orderData;
   String category;
   int orderNum;
-  Orders(this.orderData, this.category, this.orderNum);
+  bool orderClear;
+  Timestamp orderTime;
+  Orders(this.orderData, this.category, this.orderNum, this.orderClear,
+      this.orderTime);
 }
 
 class MyHomePage extends StatefulWidget {
@@ -69,7 +72,6 @@ class reactiveStateManagePage extends GetxController {
 
   void addOrderIdCheck(int value) {
     _orderIdCheck.add(value);
-    print(orderIdCheck);
   }
 
   void resetOrderIdCheck() {
@@ -78,7 +80,6 @@ class reactiveStateManagePage extends GetxController {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String title = '주문내역이 없습니다.';
   @override
   Widget build(BuildContext context) {
     final _getData = Get.put(reactiveStateManagePage());
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       drawerScrimColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        child: CreateAppBar(title: title, scaffoldKey: scaffoldKey),
+        child: CreateAppBar(scaffoldKey: scaffoldKey),
       ),
       body: Scaffold(
         key: scaffoldKey,
@@ -106,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 final documents = snapshot.data!.docs;
                 _getData.resetOrderIdCheck();
+
                 return Expanded(
                   child: ListView(
                     scrollDirection: Axis.horizontal,

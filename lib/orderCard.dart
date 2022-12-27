@@ -6,8 +6,8 @@ import 'orderOption.dart';
 
 Widget order(DocumentSnapshot snapshot) {
   // ignore: unused_local_variable
-  final value =
-      Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
+  final value = Orders(snapshot['orderData'], snapshot['category'],
+      snapshot['orderNum'], snapshot['orderClear'], snapshot['orderTime']);
   // print(datas);
   return Container(
       margin: EdgeInsets.only(bottom: 5),

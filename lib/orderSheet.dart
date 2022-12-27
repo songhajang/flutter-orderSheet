@@ -1,4 +1,5 @@
 // ignore: unused_import
+import 'dart:async';
 import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/orderCard.dart';
 import 'package:get/get.dart';
+import 'package:timer_builder/timer_builder.dart';
 
 // ignore: unused_import
 import 'orderOption.dart';
@@ -14,15 +16,18 @@ import 'orderOption.dart';
 Widget orderSheet(DocumentSnapshot snapshot) {
   final _getData = Get.put(reactiveStateManagePage());
   // ignore: unused_local_variable
-  final value =
-      Orders(snapshot['orderData'], snapshot['category'], snapshot['orderNum']);
+  final value = Orders(snapshot['orderData'], snapshot['category'],
+      snapshot['orderNum'], snapshot['orderClear'], snapshot['orderTime']);
+  // ignore: invalid_use_of_protected_member
   if (!(_getData.orderIdCheck.value.indexOf(snapshot['orderNum']) == -1)) {
     return SizedBox();
   } else {
     _getData.addOrderIdCheck(snapshot['orderNum']);
-    // orderIdCheck.add(snapshot['orderNum']);
   }
   final orderNum = snapshot['orderNum'];
+  final timestamps = Timestamp(
+          snapshot['orderTime'].seconds, snapshot['orderTime'].nanoseconds)
+      .toDate();
   return Container(
       width: 250,
       margin: EdgeInsets.only(top: 10, bottom: 10, left: 20),
@@ -55,11 +60,23 @@ Widget orderSheet(DocumentSnapshot snapshot) {
                               fontSize: 18,
                             ),
                           ),
-                          Text(
-                            '3분 경과',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.red),
-                          )
+                          TimerBuilder.periodic(
+                            const Duration(minutes: 1),
+                            builder: (context) {
+                              var date = new DateTime.now();
+                              var orderTimeCount = date
+                                  .difference(timestamps)
+                                  .inMinutes
+                                  .toString();
+                              print(orderTimeCount);
+                              return Text(
+                                '$orderTimeCount분 경과',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ],
@@ -82,6 +99,9 @@ Widget orderSheet(DocumentSnapshot snapshot) {
                         ),
                       );
                     }),
+                Container(
+                  child: Text('${timestamps}'),
+                ),
                 Container(
                     width: double.infinity,
                     child: ElevatedButton(
