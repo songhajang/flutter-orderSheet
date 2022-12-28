@@ -1,104 +1,36 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-// firestore 연동
-void main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(TestApplication());
-}
-
-class Test {
-  int tableId;
-  String title;
-  Test(this.tableId, this.title);
-}
-
-// 화면 빌드
-class TestApplication extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Test Application',
-      theme: ThemeData(
-          primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Color.fromARGB(255, 90, 90, 90)),
-      home: MainPage(),
-    );
-  }
-}
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  TextEditingController _todoController = TextEditingController();
-
-  @override
-  void dispose() {
-    _todoController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('남은 할 일'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('test').snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  }
-                  final documents = snapshot.data!.docs;
-                  return Expanded(
-                    child: ListView(
-                      children:
-                          documents.map((doc) => _buildItem(doc)).toList(),
-                    ),
-                  );
-                }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItem(DocumentSnapshot snapshot) {
-    final a = Test(snapshot['tableId'], snapshot['title']);
-    return Container(
-      padding: EdgeInsets.all(10.0),
-      margin: EdgeInsets.all(10.0),
-      child: TextButton(
-          onPressed: () => {},
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-                Color.fromARGB(255, 255, 255, 255)),
-          ),
-          child: ListTile(
-            title: Text(
-              'table: ${a.tableId.toString()}',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 20.0,
-              ),
-            ),
-          )),
-    );
-  }
-}
+Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('order')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
+                          final documents = snapshot.data!.docs;
+                          return SingleChildScrollView(
+                              child: ElevatedButton(
+                            onPressed: () {
+                              // print(clickOrderNum);
+                              // documents.forEach((doc) {
+                              _getData.ordersAll.forEach((element) {
+                                if (_getData.orderCount[element] ==
+                                    clickOrderNum) {
+                                  FirebaseFirestore.instance
+                                      .collection('order')
+                                      .doc(element)
+                                      .update({'orderClear': false});
+                                }
+                              });
+                              // });
+                            },
+                            child: Column(
+                              children: documents
+                                  .map((doc) => test(doc, orderNum))
+                                  .toList(),
+                            ),
+                          ));
+                        })),
 
 
 -------------------------------------------------------------------------------------------------------------------------------

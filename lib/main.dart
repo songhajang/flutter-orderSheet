@@ -49,10 +49,14 @@ class reactiveStateManagePage extends GetxController {
   RxList _datas = [].obs;
   RxList _dataId = [].obs;
   RxList _orderIdCheck = [].obs;
+  RxMap _orderCount = {}.obs;
+  RxList _ordersAll = [].obs;
 
   RxList get datas => _datas;
   RxList get dataId => _dataId;
   RxList get orderIdCheck => _orderIdCheck;
+  RxMap get orderCount => _orderCount;
+  RxList get ordersAll => _ordersAll;
 
   void addDatas(String value) {
     _datas.add(value);
@@ -76,6 +80,19 @@ class reactiveStateManagePage extends GetxController {
 
   void resetOrderIdCheck() {
     _orderIdCheck = [].obs;
+  }
+
+  void addOrderCount(String value, int orderNum) {
+    _orderCount[value] = orderNum;
+    // _orderCount[orderNum] = value;
+    if (!(_ordersAll.contains(value))) {
+      _ordersAll.add(value);
+    }
+  }
+
+  void removeOrderCount(String value) {
+    _orderCount.remove(value);
+    _ordersAll.remove(value);
   }
 }
 

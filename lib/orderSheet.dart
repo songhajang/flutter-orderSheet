@@ -18,6 +18,7 @@ Widget orderSheet(DocumentSnapshot snapshot) {
   // ignore: unused_local_variable
   final value = Orders(snapshot['orderData'], snapshot['category'],
       snapshot['orderNum'], snapshot['orderClear'], snapshot['orderTime']);
+  _getData.addOrderCount(snapshot.id, snapshot['orderNum']);
   // ignore: invalid_use_of_protected_member
   if (!(_getData.orderIdCheck.value.indexOf(snapshot['orderNum']) == -1)) {
     return SizedBox();
@@ -68,7 +69,6 @@ Widget orderSheet(DocumentSnapshot snapshot) {
                                   .difference(timestamps)
                                   .inMinutes
                                   .toString();
-                              print(orderTimeCount);
                               return Text(
                                 '$orderTimeCount분 경과',
                                 style: TextStyle(
@@ -92,47 +92,93 @@ Widget orderSheet(DocumentSnapshot snapshot) {
                       }
                       final documents = snapshot.data!.docs;
                       return Expanded(
-                        child: ListView(
-                          children: documents
-                              .map((doc) => test(doc, orderNum))
-                              .toList(),
-                        ),
-                      );
+                          child: ListView(
+                        children: documents
+                            .map((doc) => test(doc, orderNum))
+                            .toList(),
+                      ));
                     }),
                 Container(
-                  child: Text('${timestamps}'),
-                ),
-                Container(
                     width: double.infinity,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero),
-                            // ignore: deprecated_member_use
-                            primary: Color(0xffFFE735)),
-                        onPressed: () {},
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Text(
-                            '일괄처리',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
-                        )))
+                    child: snapshot['orderClear'] == true
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero),
+                                // ignore: deprecated_member_use
+                                primary: Color(0xff000000)),
+                            onPressed: () {
+                              // FirebaseFirestore.instance
+                              //     .collection('order')
+                              //     .doc(snapshot.id)
+                              //     .delete();
+                              print(_getData.ordersAll);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                '처리완료',
+                                style: TextStyle(
+                                    // color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17),
+                              ),
+                            ),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero),
+                                // ignore: deprecated_member_use
+                                primary: Color(0xffFFE735)),
+                            onPressed: () {
+                              _getData.ordersAll.forEach((element) {
+                                if (_getData.orderCount[element] ==
+                                    snapshot['orderNum']) {
+                                  FirebaseFirestore.instance
+                                      .collection('order')
+                                      .doc(element)
+                                      .update({'orderClear': true});
+                                }
+                              });
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                '일괄처리',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17),
+                              ),
+                            )))
               ],
             ),
           )));
 }
 
 Widget test(DocumentSnapshot snapshot, orderNum) {
+  // final _getData = Get.put(reactiveStateManagePage());
   if (snapshot['orderNum'] == orderNum) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: DottedDecoration(color: Colors.black),
-      child: order(snapshot),
-    );
+    return TextButton(
+        onPressed: () {
+          if (snapshot['orderClear'] == true) {
+            FirebaseFirestore.instance
+                .collection('order')
+                .doc(snapshot.id)
+                .update({'orderClear': false});
+          } else {
+            FirebaseFirestore.instance
+                .collection('order')
+                .doc(snapshot.id)
+                .update({'orderClear': true});
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.all(10),
+          decoration: DottedDecoration(color: Colors.black),
+          child: orderCard(snapshot),
+        ));
   } else {
     return SizedBox();
   }

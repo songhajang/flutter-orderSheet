@@ -7,11 +7,20 @@ class Options {
   Options(this.option);
 }
 
-orderOption(DocumentSnapshot snapshot) {
+orderOption(DocumentSnapshot snapshot, orderClear) {
   return Padding(
       padding: const EdgeInsets.all(10),
       child: Text(
         snapshot['option'],
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        style: orderClear
+            ? const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.lineThrough,
+                decorationThickness: 4,
+                color: Color(0xffBABBBB),
+              )
+            : const TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w700, color: Colors.black),
       ));
 }
