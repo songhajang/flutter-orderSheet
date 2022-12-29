@@ -9,41 +9,53 @@ class Category {
   Category(this.custom, {this.isSected = false});
 }
 
-// ----firebase 데이터 option 시작----
-Widget buildItem(DocumentSnapshot snapshot) {
-  final value = Category(snapshot['custom'], isSected: snapshot['isSected']);
-  ClickCheck(snapshot);
-  return Container(
-    margin: const EdgeInsets.all(5),
-    padding: const EdgeInsets.only(left: 20, right: 20),
-    child: ElevatedButton(
-      onPressed: () {
-        toggleSected(snapshot);
-      },
-      style: value.isSected
-          ? const ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll<Color>(Color(0xff28BE91)),
-            )
-          : const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll<Color>(Colors.white)),
-      child: ListTile(
-        title: Text(
-          value.custom.toString(),
-          style: value.isSected
-              ? const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0,
-                  color: Colors.white)
-              : const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0,
-                ),
+class categoryItem extends StatefulWidget {
+  const categoryItem({super.key, this.snapshot});
+  final snapshot;
+
+  @override
+  State<categoryItem> createState() => _categoryItemState();
+}
+
+class _categoryItemState extends State<categoryItem> {
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = widget.snapshot;
+    final value = Category(snapshot['custom'], isSected: snapshot['isSected']);
+    ClickCheck(snapshot);
+    return Container(
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.only(left: 20, right: 20),
+      child: ElevatedButton(
+        onPressed: () {
+          toggleSected(snapshot);
+        },
+        style: value.isSected
+            ? const ButtonStyle(
+                backgroundColor:
+                    MaterialStatePropertyAll<Color>(Color(0xff28BE91)),
+              )
+            : const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll<Color>(Colors.white)),
+        child: ListTile(
+          title: Text(
+            value.custom.toString(),
+            style: value.isSected
+                ? const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.0,
+                    color: Colors.white)
+                : const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.0,
+                  ),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
+
 // ----firebase 데이터 option 끝----
 
 // firestore 선택 데이터 업데이트 함수 시작----

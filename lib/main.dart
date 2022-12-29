@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/orderSheet.dart';
+import 'package:flutter_application_1/drawer/drawer.dart';
 import 'Appbar.dart';
-import 'drewer.dart';
-import 'endDrewer.dart';
+import 'endDrewer/endDrewer.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+
+import 'orderSheet/orderSheet.dart';
 
 // firestore 연동
 void main() async {
@@ -112,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         drawer: Drawer(
           width: 300,
           backgroundColor: Colors.black,
-          child: Drewar(scaffoldKey: scaffoldKey),
+          child: cartegoryDrawer(scaffoldKey: scaffoldKey),
         ),
         body: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           StreamBuilder<QuerySnapshot>(
@@ -136,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
         endDrawer: Drawer(
           width: 250,
           backgroundColor: Colors.black,
-          child: endDrewar(scaffoldKey: scaffoldKey),
+          child: orderEndDrawer(scaffoldKey: scaffoldKey),
         ),
       ),
     );
